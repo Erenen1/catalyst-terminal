@@ -356,16 +356,43 @@ export default function LandingPage() {
          </div>
       </div>
 
-      {/* Footer / CTA */}
-      <div className="border-t border-[#1c1d24] py-16 text-center relative z-10">
-         <p className="text-[9px] font-mono text-[#4a4b52] uppercase tracking-[0.3em] mb-8">Ready_to_initialize_sequence?</p>
-         <Link 
-            href="/dashboard"
-            onClick={handleLaunchClick}
-            className="inline-flex items-center gap-2 px-10 py-4 bg-white text-black font-bold uppercase tracking-widest text-[10px] hover:bg-mint transition-all"
-         >
-            Get_Started_Now
-         </Link>
+      {/* Footer / CTA / Disclaimer */}
+      <div className="border-t border-[#1c1d24] py-16 px-6 relative z-10">
+         <div className="max-w-6xl mx-auto flex flex-col items-center">
+            <p className="text-[9px] font-mono text-[#4a4b52] uppercase tracking-[0.3em] mb-8">Ready_to_initialize_sequence?</p>
+            <Link 
+               href="/dashboard"
+               onClick={handleLaunchClick}
+               className="inline-flex items-center gap-2 px-10 py-4 bg-white text-black font-bold uppercase tracking-widest text-[10px] hover:bg-mint transition-all mb-20"
+            >
+               Get_Started_Now
+            </Link>
+
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-12 pt-16 border-t border-[#1c1d24]/50">
+               <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 text-[#4a4b52]">
+                     <Shield size={14} className="text-mint" />
+                     <span className="text-[10px] font-bold uppercase tracking-widest">Risk_Warning</span>
+                  </div>
+                  <p className="text-[9px] font-mono text-[#4a4b52] leading-relaxed uppercase">
+                     Kripto varlık ticareti yüksek risk içerir. Catalyst Node'ları tarafından sağlanan veriler piyasa gözlemine dayalı teknik istatistiklerdir. Geçmiş performans gelecek sonuçların garantisi değildir. Sermayenizin tamamını kaybedebilirsiniz.
+                  </p>
+               </div>
+               <div className="space-y-4 text-left">
+                  <div className="flex items-center gap-2 text-[#4a4b52]">
+                     <Globe size={14} className="text-blue-500" />
+                     <span className="text-[10px] font-bold uppercase tracking-widest">Legal_Disclaimer</span>
+                  </div>
+                  <p className="text-[9px] font-mono text-[#4a4b52] leading-relaxed uppercase">
+                     Birdeye Catalyst bir yatırım danışmanlığı hizmeti değildir. Sunulan tüm veriler sadece bilgilendirme amaçlıdır. Yazılım hataları, veri gecikmeleri veya piyasa manipülasyonlarından kaynaklı zararlardan platform sorumlu tutulamaz.
+                  </p>
+               </div>
+            </div>
+            
+            <div className="mt-16 text-[8px] font-mono text-[#1c1d24] uppercase tracking-widest">
+               © 2026 Birdeye_Catalyst // Industrial_DeFi_Intelligence_Hub
+            </div>
+         </div>
       </div>
       
       {/* Subtle Background Elements */}

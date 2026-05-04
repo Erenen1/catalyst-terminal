@@ -115,6 +115,12 @@ export default function MarketPage() {
               </div>
             </div>
 
+            <div className="px-1">
+              <p className="text-[7px] font-mono text-[#4a4b52] leading-tight uppercase">
+                ⚠️ NOTICE: Deploying this node initiates automated monitoring. The platform is not responsible for any financial losses. Trading crypto involves extreme risk.
+              </p>
+            </div>
+
             <div className="flex flex-col gap-3">
               <button 
                 onClick={() => deployBlueprint(confirmingBlueprint)}

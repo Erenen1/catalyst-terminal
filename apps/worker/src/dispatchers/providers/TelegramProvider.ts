@@ -59,7 +59,9 @@ export class TelegramProvider implements INotificationProvider {
       `*Güvenlik Skoru:* ${security.securityScore}\n` +
       `*Likidite:* $${token.liquidity.toLocaleString('en-US')}\n` +
       `*24h Hacim:* $${token.volume24h.toLocaleString('en-US')}\n\n` +
-      `🔗 [Birdeye'da İncele](https://birdeye.so/token/${token.address})\n` +
+      `🔗 [Birdeye'da İncele](https://birdeye.so/token/${token.address})\n\n` +
+      `--- \n` +
+      `⚠️ *DISCLAIMER:* This is an automated data signal, NOT financial advice. Always DYOR. _Birdeye Catalyst v2.0_\n` +
       `_⏱ ${new Date(triggeredAt).toISOString()}_`
     );
   }
