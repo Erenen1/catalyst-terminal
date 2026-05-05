@@ -173,7 +173,7 @@ export default function TerminalPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 md:w-12 md:h-12 border border-[#1c1d24] flex items-center justify-center bg-[#0c0d12] text-mint font-bold text-sm shrink-0 overflow-hidden">
                     {alert.token.logoURI ? (
-                      <img src={alert.token.logoURI} alt={alert.token.symbol} className="w-full h-full object-cover" />
+                      <img src={alert.token.logoURI} alt={alert.token.symbol} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                     ) : (
                       (alert.token.symbol || '?')[0]
                     )}

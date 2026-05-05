@@ -269,7 +269,7 @@ export default function LandingPage() {
                            <div className={`w-1.5 h-1.5 rounded-full ${row.status === 'IGNORE' ? 'bg-red-500' : 'bg-mint'} animate-pulse shrink-0`}></div>
                            <div className="w-5 h-5 border border-[#1c1d24] flex items-center justify-center bg-[#0c0d12] text-mint font-bold text-[8px] shrink-0 overflow-hidden">
                              {row.logoURI ? (
-                               <img src={row.logoURI} alt={row.name} className="w-full h-full object-cover" />
+                               <img src={row.logoURI} alt={row.name} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                              ) : (
                                (row.name || '?')[0]
                              )}

@@ -9,7 +9,7 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import type { IBirdeyeService } from '../interfaces/IBirdeyeService';
 import type { BirdeyeToken, BirdeyeSecurityData, BirdeyeMarketData } from '@chaintrigger/shared';
-import { logger } from '@chaintrigger/shared';
+import { logger, formatLogoURI } from '@chaintrigger/shared';
 
 const BASE_URL = 'https://public-api.birdeye.so';
 const CACHE_TTL_SECONDS = 30; // Birdeye rate-limit koruması
@@ -58,7 +58,7 @@ export class BirdeyeService implements IBirdeyeService {
       liquidity: t.liquidity || 0,
       volume24h: t.volume24hUSD || t.v24hUSD || 0,
       priceChange24h: t.price24hChangePercent || t.v24hChangePercent || 0,
-      logoURI: t.logo_uri || t.logoURI,
+      logoURI: formatLogoURI(t.logo_uri || t.logoURI || t.logo),
     }));
     await this.redisClient.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(tokens));
     return tokens;
@@ -82,7 +82,7 @@ export class BirdeyeService implements IBirdeyeService {
       liquidity: t.liquidity || 0,
       volume24h: t.volume24hUSD || t.v24hUSD || 0,
       priceChange24h: t.price24hChangePercent || t.v24hChangePercent || 0,
-      logoURI: t.logo_uri || t.logoURI,
+      logoURI: formatLogoURI(t.logo_uri || t.logoURI || t.logo),
     }));
     await this.redisClient.setEx(cacheKey, CACHE_TTL_SECONDS, JSON.stringify(tokens));
     return tokens;
@@ -159,8 +159,8 @@ export class BirdeyeService implements IBirdeyeService {
       const metaDataMap = data.data || {};
       
       for (const addr of missingInCache) {
-        const logoURI = metaDataMap[addr]?.logo_uri || metaDataMap[addr]?.logoURI;
-        const meta = { logoURI };
+        const logo = metaDataMap[addr]?.logo_uri || metaDataMap[addr]?.logoURI || metaDataMap[addr]?.logo;
+        const meta = { logoURI: formatLogoURI(logo) };
         results[addr] = meta;
         
         // Cache globally for 24 hours

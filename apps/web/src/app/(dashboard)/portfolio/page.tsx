@@ -144,7 +144,7 @@ export default function PortfolioPage() {
                           <div className="flex items-center gap-4">
                             <div className="w-8 h-8 bg-black border border-[#1c1d24] flex items-center justify-center text-white text-[10px] font-bold shrink-0 overflow-hidden">
                               {token.logoURI ? (
-                                <img src={token.logoURI} alt={token.symbol} className="w-full h-full object-cover" />
+                                <img src={token.logoURI} alt={token.symbol} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                               ) : (
                                 (token.symbol || '?')[0]
                               )}
