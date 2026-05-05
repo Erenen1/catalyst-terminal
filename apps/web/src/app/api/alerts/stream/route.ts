@@ -23,13 +23,26 @@ export async function GET(req: NextRequest) {
   
   // Clean up on close
   req.signal.addEventListener('abort', async () => {
-    await subscriber.unsubscribe(channelKey);
-    await subscriber.quit();
-    writer.close();
+    try {
+      await subscriber.unsubscribe(channelKey);
+      await subscriber.quit();
+    } catch (e) {
+      // Redis might already be disconnected
+    } finally {
+      try {
+        writer.close();
+      } catch (e) {
+        // Stream might already be closed
+      }
+    }
   });
 
   await subscriber.subscribe(channelKey, (message: string) => {
-    writer.write(encoder.encode(`data: ${message}\n\n`));
+    try {
+      writer.write(encoder.encode(`data: ${message}\n\n`));
+    } catch (e) {
+      // Stream closed, unsubscribe will handle it
+    }
   });
 
   return new Response(responseStream.readable, {
