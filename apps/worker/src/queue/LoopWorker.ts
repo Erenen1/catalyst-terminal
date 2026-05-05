@@ -1,7 +1,5 @@
 import { Worker, Job } from 'bullmq';
-import { LoopWebhookEventPayload, ILoopSubscription } from '@chaintrigger/shared';
-import { LoopSubscriptionModel } from '@chaintrigger/shared/src/models/LoopSubscription.model';
-import { UserModel } from '@chaintrigger/shared/src/models/User.model';
+import { LoopWebhookEventPayload, ILoopSubscription, LoopSubscriptionModel, UserModel } from '@chaintrigger/shared';
 import { RedisClientType } from 'redis';
 
 const GRACE_PERIOD_DAYS = 3;
