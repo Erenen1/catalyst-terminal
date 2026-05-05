@@ -35,6 +35,13 @@ export async function GET(request: Request) {
       await user.save();
     }
 
+    const formatMs = (ms: number) => {
+      const hours = ms / 3600000;
+      if (hours >= 1) return `${Math.round(hours)}h`;
+      const mins = ms / 60000;
+      return `${Math.round(mins)}m`;
+    };
+
     return NextResponse.json({
       isConnected: !!user.telegramChatId,
       telegramUsername: user.telegramUsername,
@@ -42,7 +49,11 @@ export async function GET(request: Request) {
       tier: user.tier,
       proUntil: user.proUntil,
       referralCode: user.referralCode,
-      referralCount: user.referralCount || 0
+      referralCount: user.referralCount || 0,
+      settings: {
+        pollingPro: formatMs(Number(process.env.POLLING_INTERVAL_PRO_MS) || 3600000),
+        pollingFree: formatMs(Number(process.env.POLLING_INTERVAL_FREE_MS) || 14400000),
+      }
     });
   } catch (error) {
     console.error('Error fetching user status:', error);

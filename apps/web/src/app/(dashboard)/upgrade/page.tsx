@@ -88,10 +88,10 @@ export default function UpgradePage() {
               <ul className="space-y-4 pt-4 border-t border-[#1c1d24]">
                 {[
                   { text: "3 Active Monitoring Nodes", enabled: true },
-                  { text: "4h Monitoring Interval", enabled: true },
+                  { text: `${userStatus?.settings?.pollingFree || '4h'} Monitoring Interval`, enabled: true },
                   { text: "Standard Telegram Alerts", enabled: true },
                   { text: "Multi-Chain Access", enabled: true },
-                  { text: "1h Priority Polling", enabled: false },
+                  { text: `${userStatus?.settings?.pollingPro || '1h'} Priority Polling`, enabled: false },
                   { text: "Security Score Filters", enabled: false },
                 ].map((item, idx) => (
                   <li key={idx} className={`flex items-center gap-3 text-[11px] font-mono uppercase ${item.enabled ? 'text-[#a4a5ab]' : 'text-[#2a2b32] line-through'}`}>
@@ -140,7 +140,7 @@ export default function UpgradePage() {
               <ul className="space-y-4 pt-4 border-t border-[#1c1d24]">
                 {[
                   { text: "50 Active Monitoring Nodes", icon: Zap },
-                  { text: "1h Priority Polling", icon: Activity },
+                  { text: `${userStatus?.settings?.pollingPro || '1h'} Priority Polling`, icon: Activity },
                   { text: "Full Security Armor (Mint/Freeze)", icon: Shield },
                   { text: "Top 10 Holder Concentration Filter", icon: Cpu },
                   { text: "Priority Support & Node Sync", icon: Globe },
