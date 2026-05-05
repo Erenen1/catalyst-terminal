@@ -23,12 +23,16 @@ export default function UpgradePage() {
   const isPro = userStatus?.tier === 'pro';
   const helioPayId = process.env.NEXT_PUBLIC_HELIO_PAY_ID || '65f123abc';
 
-  const copyReferral = () => {
+  const copyReferral = async () => {
     if (!userStatus?.referralCode) return;
-    const url = `${window.location.origin}/?ref=${userStatus.referralCode}`;
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      const url = `${window.location.origin}/?ref=${userStatus.referralCode}`;
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
   return (
