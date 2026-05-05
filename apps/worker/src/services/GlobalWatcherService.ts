@@ -85,7 +85,7 @@ export class GlobalWatcherService {
       // Update or create watchers for each chain
       for (const [chain, rules] of rulesByChain) {
         const hasPro = rules.some((r: IRule) => userTierMap.get(r.userId) === 'pro' || r.userId === 'GLOBAL');
-        const intervalMs = hasPro ? 10000 : 60000;
+        const intervalMs = hasPro ? 3600000 : 14400000; // Pro: 1h, Free: 4h
 
         this.ensureWatcher(chain, intervalMs, rules, userTierMap);
       }
@@ -216,13 +216,13 @@ export class GlobalWatcherService {
 
       const tier = (userTierMap.get(rule.userId) || (rule.userId === 'GLOBAL' ? 'pro' : 'free')) as string;
       
-      // If it's a 10s tick but rule is Free, skip if it's not the 60s mark
-      if (tier === 'free' && state.intervalMs === 10000) {
+      // If it's a 1h tick (Pro speed) but rule is Free, skip if it's not the 4h mark
+      if (tier === 'free' && state.intervalMs === 3600000) {
         const now = Date.now();
         const ruleKey = rule._id?.toString() || `${rule.userId}-${rule.name}`;
         const lastRun = this.lastRunMap.get(ruleKey) || 0;
         
-        if (now - lastRun < 55000) continue; 
+        if (now - lastRun < 14000000) continue; // Skip until ~4 hours passed
         this.lastRunMap.set(ruleKey, now);
       }
 

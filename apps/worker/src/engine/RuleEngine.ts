@@ -31,8 +31,8 @@ export class RuleEngine {
    * "Candidate Enrichment" optimizasyonu için kullanılır.
    */
   public isCandidate(rule: IRule, token: BirdeyeToken): boolean {
-    // Kredi Koruması: Likiditesi çok düşük ($100 altı) tokenlar için asla pahalı sorgu yapma
-    const HARD_LIQUIDITY_MIN = 100;
+    // Kredi Koruması: Likiditesi çok düşük ($1000 altı) tokenlar için asla pahalı sorgu yapma
+    const HARD_LIQUIDITY_MIN = 1000;
     if ((token.liquidity || 0) < HARD_LIQUIDITY_MIN) {
       return false;
     }
@@ -42,7 +42,7 @@ export class RuleEngine {
     
     // Eğer kuralda temel bir filtre yoksa, sistem güvenliği için minimum likidite şartı ara
     if (basicConditions.length === 0) {
-      return (token.liquidity || 0) > 500; // Varsayılan adaylık şartı
+      return (token.liquidity || 0) > 1000; // Varsayılan adaylık şartı
     }
 
     const fieldValues: Record<string, number> = {
