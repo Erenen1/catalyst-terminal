@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAccount } from 'wagmi';
-import { TrendingUp, TrendingDown, DollarSign, Info, BarChart2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Info, BarChart2, Trash2 } from 'lucide-react';
 
 export default function PortfolioPage() {
   const { address, isConnected } = useAccount();
@@ -34,6 +34,24 @@ export default function PortfolioPage() {
       setLoading(false);
     }
   }, [address]);
+
+  const deleteTracked = async (id: string) => {
+    try {
+      const res = await fetch(`/api/tracked?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        // Optimistically remove from state
+        setTrackedTokens((prev) => prev.filter((t) => t._id !== id));
+        setCurrentPrices((prev) => {
+          const next = { ...prev };
+          const token = trackedTokens.find((t) => t._id === id);
+          if (token) delete next[token.tokenAddress];
+          return next;
+        });
+      }
+    } catch (err) {
+      console.error('[Portfolio] Delete error:', err);
+    }
+  };
 
   useEffect(() => {
     if (isConnected) fetchTracked();
@@ -109,6 +127,7 @@ export default function PortfolioPage() {
                     PnL
                     <span className="ml-1 text-[7px] normal-case text-[#2a2b32]">simulated</span>
                   </th>
+                  <th className="p-5 w-12"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1c1d24]">
@@ -159,6 +178,15 @@ export default function PortfolioPage() {
                             <div className="text-[7px] font-mono text-[#4a4b52]">Awaiting price</div>
                           )}
                         </td>
+                        <td className="p-5">
+                          <button
+                            onClick={() => deleteTracked(token._id)}
+                            className="p-1.5 text-[#4a4b52] hover:text-red-500 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20"
+                            title="Untrack"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </td>
                       </tr>
                     );
                   })
@@ -192,8 +220,17 @@ export default function PortfolioPage() {
                             <div className="text-[8px] font-mono text-[#4a4b52] uppercase">{token.symbol} · {token.chain?.toUpperCase()}</div>
                           </div>
                         </div>
-                        <div className={`text-[13px] font-mono font-bold ${pnlColor(pnl)}`}>
-                          {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)}%
+                        <div className="flex items-center gap-3">
+                          <div className={`text-[13px] font-mono font-bold ${pnlColor(pnl)}`}>
+                            {pnl >= 0 ? '+' : ''}{pnl.toFixed(2)}%
+                          </div>
+                          <button
+                            onClick={() => deleteTracked(token._id)}
+                            className="p-1.5 text-[#4a4b52] hover:text-red-500 hover:bg-red-500/10 transition-all border border-transparent hover:border-red-500/20"
+                            title="Untrack"
+                          >
+                            <Trash2 size={12} />
+                          </button>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[#1c1d24]">
