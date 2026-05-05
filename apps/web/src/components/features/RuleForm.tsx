@@ -84,9 +84,13 @@ export default function RuleForm({ userId, onClose, onSuccess }: RuleFormProps) 
     }
   };
 
+  const isPro = userStatus?.tier === 'pro';
+  const limit = isPro ? 50 : 3;
+  const isLimitReached = ruleCount >= limit;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLimitReached) return;
     setLoading(true);
 
     const ruleData = {
@@ -384,6 +388,15 @@ export default function RuleForm({ userId, onClose, onSuccess }: RuleFormProps) 
               </div>
             </div>
 
+            {isLimitReached && (
+              <div className="bg-amber/5 border border-amber/20 p-4 mb-2">
+                <p className="text-[9px] font-mono text-amber uppercase leading-relaxed text-center">
+                  Limit reached. {isPro ? 'PRO' : 'FREE'} users are limited to {limit} active nodes. 
+                  {!isPro && ' Upgrade to PRO for up to 50 nodes.'}
+                </p>
+              </div>
+            )}
+
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-[#1c1d24]">
               <button 
                 type="button" 
@@ -394,10 +407,10 @@ export default function RuleForm({ userId, onClose, onSuccess }: RuleFormProps) 
               </button>
               <button 
                 type="submit"
-                disabled={loading}
-                className="w-full sm:w-auto bg-mint text-black px-6 py-3 md:py-2 flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[9px] hover:brightness-110 disabled:opacity-50 shadow-glow"
+                disabled={loading || isLimitReached}
+                className="w-full sm:w-auto bg-mint text-black px-6 py-3 md:py-2 flex items-center justify-center gap-2 font-bold uppercase tracking-widest text-[9px] hover:brightness-110 disabled:opacity-50 disabled:grayscale shadow-glow"
               >
-                {loading ? 'Initializing...' : 'Deploy Rule Node'} <ChevronRight size={12} />
+                {loading ? 'Initializing...' : isLimitReached ? 'LIMIT_REACHED' : 'Deploy Rule Node'} <ChevronRight size={12} />
               </button>
             </div>
           </form>
