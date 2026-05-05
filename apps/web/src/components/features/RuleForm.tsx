@@ -37,27 +37,20 @@ export default function RuleForm({ userId, onClose, onSuccess }: RuleFormProps) 
     }
   }, [connectedChain]);
 
-  const [telegramStatus, setTelegramStatus] = useState<{ isConnected: boolean; username?: string; chatId?: string; tier?: string }>({ isConnected: false });
-  const [isLinking, setIsLinking] = useState(false);
+  const [userTier, setUserTier] = useState('free');
   const [ruleCount, setRuleCount] = useState(0);
-  const userStatus = telegramStatus; // Aliasing for clarity in limit checks
 
-  // Fetch and poll for telegram status
+  // Fetch user status and rule count
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-
     const checkStatus = async () => {
       try {
-        // Fetch User Status (Tier, Telegram etc)
         const statusRes = await fetch(`/api/user/status?address=${userId}`);
         const statusData = await statusRes.json();
-        setTelegramStatus(statusData);
-        if (statusData.isConnected) {
+        setUserTier(statusData.tier || 'free');
+        if (statusData.telegramChatId) {
           setChatId(statusData.telegramChatId);
-          if (interval) clearInterval(interval);
         }
 
-        // Fetch Current Rule Count
         const rulesRes = await fetch(`/api/rules?userId=${userId}`);
         const rulesData = await rulesRes.json();
         if (Array.isArray(rulesData)) {
@@ -69,31 +62,9 @@ export default function RuleForm({ userId, onClose, onSuccess }: RuleFormProps) 
     };
 
     checkStatus();
-    interval = setInterval(checkStatus, 5000);
-
-    return () => clearInterval(interval);
   }, [userId]);
 
-  const handleLinkTelegram = async () => {
-    setIsLinking(true);
-    try {
-      const res = await fetch('/api/user/telegram/link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address: userId }),
-      });
-      const data = await res.json();
-      if (data.link) {
-        window.open(data.link, '_blank');
-      }
-    } catch (error) {
-      console.error('Error linking:', error);
-    } finally {
-      setIsLinking(false);
-    }
-  };
-
-  const isPro = userStatus?.tier === 'pro';
+  const isPro = userTier === 'pro';
   const limit = isPro ? 50 : 3;
   const isLimitReached = ruleCount >= limit;
 
@@ -350,50 +321,22 @@ export default function RuleForm({ userId, onClose, onSuccess }: RuleFormProps) 
 
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <label className="text-[9px] font-mono text-[#4a4b52] uppercase tracking-widest">Telegram Action Node</label>
+                <label className="text-[9px] font-mono text-[#4a4b52] uppercase tracking-widest">Alert Destination</label>
               </div>
-              
-              <div className={`p-4 border transition-all ${telegramStatus.isConnected ? 'border-mint/20 bg-[#0c0d12]' : 'border-[#1c1d24] bg-[#08090d]'}`}>
-                 {telegramStatus.isConnected ? (
-                   <div className="space-y-4">
-                     <div className="flex items-center justify-between border-b border-[#1c1d24] pb-3">
-                       <div className="flex items-center gap-2">
-                         <div className="w-2 h-2 bg-mint animate-pulse" />
-                         <span className="text-[10px] font-mono text-mint uppercase tracking-widest">Link_Established</span>
-                       </div>
-                       <span className="text-[8px] font-mono text-[#4a4b52] uppercase">Secure_Session</span>
-                     </div>
-                     
-                     <div className="flex items-center justify-between">
-                       <div className="space-y-1">
-                         <div className="flex items-center gap-2">
-                           <span className="text-[9px] font-mono text-[#4a4b52] uppercase">User:</span>
-                           <span className="text-[10px] font-bold text-white uppercase tracking-tight">@{telegramStatus.username || 'Anonymous'}</span>
-                         </div>
-                       </div>
-                       
-                       <button 
-                        type="button"
-                        onClick={() => setTelegramStatus({ isConnected: false })}
-                        className="px-3 py-1 border border-red-500/20 text-red-500/50 hover:text-red-500 hover:border-red-500/50 transition-all text-[8px] font-mono uppercase"
-                       >
-                        Reset
-                       </button>
-                     </div>
-                   </div>
-                 ) : (
-                   <div className="flex flex-col items-center gap-4 py-2">
-                     <p className="text-[9px] font-mono text-[#4a4b52] uppercase text-center">Telegram connection required</p>
-                     <button 
-                      type="button"
-                      onClick={handleLinkTelegram}
-                      disabled={isLinking}
-                      className="w-full sm:w-auto px-6 py-3 border border-mint text-mint text-[9px] font-bold uppercase tracking-widest hover:bg-mint hover:text-black transition-all flex items-center justify-center gap-2"
-                     >
-                       <Zap size={14} /> {isLinking ? 'GENERATING...' : 'Initialize_Telegram_Link'}
-                     </button>
-                   </div>
-                 )}
+              <div className={`p-3 border flex items-center gap-3 ${
+                chatId ? 'border-mint/20 bg-[#0c0d12]' : 'border-amber/20 bg-[#08090d]'
+              }`}>
+                {chatId ? (
+                  <>
+                    <div className="w-2 h-2 bg-mint animate-pulse flex-shrink-0" />
+                    <span className="text-[10px] font-mono text-mint uppercase">Telegram_Active — Alerts will be sent to your linked account.</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-2 h-2 bg-amber animate-pulse flex-shrink-0" />
+                    <span className="text-[10px] font-mono text-amber/80 uppercase">No Telegram linked. Link it from the dashboard header to receive alerts.</span>
+                  </>
+                )}
               </div>
             </div>
 
