@@ -77,8 +77,31 @@ export default function LandingPage() {
     };
 
     fetchRealData();
-    const interval = setInterval(fetchRealData, 60000); // 1m refresh
-    return () => clearInterval(interval);
+
+    // Real-time SSE Integration for Landing Page Radar
+    const globalStream = new EventSource('/api/alerts/stream?userId=GLOBAL');
+    
+    globalStream.onmessage = (event) => {
+      try {
+        const newAlert = JSON.parse(event.data);
+        setRealAlerts(prev => {
+          // Duplicate check
+          if (prev.some(a => a.token?.address === newAlert.token?.address && a.triggerType === newAlert.triggerType)) {
+            return prev;
+          }
+          return [newAlert, ...prev].slice(0, 50);
+        });
+      } catch (err) {
+        console.error('SSE Parse error:', err);
+      }
+    };
+
+    const interval = setInterval(fetchRealData, 120000); // 2m fallback refresh
+    
+    return () => {
+      globalStream.close();
+      clearInterval(interval);
+    };
   }, []);
 
   const getRadarData = (type: string) => {
