@@ -4,10 +4,14 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
       target: runner
-    # ports:
-    #   - "3000:3000"
-    # env_file:
-    #   - .env.prod
+      args:
+        - NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=${NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}
+        - NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=${NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - HELIO_WEBHOOK_SECRET=${HELIO_WEBHOOK_SECRET}
+      - NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=${NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID}
+      - NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=${NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
     depends_on:
       - redis
       - mongodb
@@ -20,8 +24,12 @@ services:
       context: .
       dockerfile: apps/worker/Dockerfile
       target: runner
-    # env_file:
-    #   - .env.prod
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - BIRDEYE_API_KEY=${BIRDEYE_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
     depends_on:
       - redis
       - mongodb

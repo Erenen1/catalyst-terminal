@@ -14,7 +14,13 @@ RUN npm install --workspace=@chaintrigger/shared --workspace=@chaintrigger/web -
 COPY packages/shared ./packages/shared
 COPY apps/web ./apps/web
 
-# Build
+# Build Arguments for Next.js (Must be available during build time)
+ARG NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+ARG NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+
+ENV NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=$NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+ENV NEXT_PUBLIC_TELEGRAM_BOT_USERNAME=$NEXT_PUBLIC_TELEGRAM_BOT_USERNAME
+
 RUN cd packages/shared && npm run build
 ENV NEXT_TELEMETRY_DISABLED 1
 RUN cd apps/web && npm run build
