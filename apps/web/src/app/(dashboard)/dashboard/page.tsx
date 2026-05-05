@@ -135,22 +135,41 @@ export default function Dashboard() {
   }, [address]);
 
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && address) {
       fetchRules();
       fetchAlerts();
       fetchGlobalAlerts();
       fetchTracked();
       fetchUserStatus();
+
+      // Real-time SSE Integration (Optimization 5)
+      const userStream = new EventSource(`/api/alerts/stream?userId=${address}`);
+      const globalStream = new EventSource(`/api/alerts/stream?userId=GLOBAL`);
+
+      userStream.onmessage = (event) => {
+        const newAlert = JSON.parse(event.data);
+        setAlerts(prev => [newAlert, ...prev].slice(0, 20));
+      };
+
+      globalStream.onmessage = (event) => {
+        const newAlert = JSON.parse(event.data);
+        setGlobalAlerts(prev => [newAlert, ...prev].slice(0, 50));
+      };
+
       const interval = setInterval(() => {
-        fetchAlerts();
-        fetchGlobalAlerts();
+        // Only poll for status/rules, alerts are handled by SSE
         fetchUserStatus();
-      }, 30000);
-      return () => clearInterval(interval);
+      }, 60000);
+
+      return () => {
+        userStream.close();
+        globalStream.close();
+        clearInterval(interval);
+      };
     } else {
       setLoading(false);
     }
-  }, [isConnected, fetchRules, fetchAlerts, fetchGlobalAlerts, fetchTracked, fetchUserStatus]);
+  }, [isConnected, address, fetchRules, fetchAlerts, fetchGlobalAlerts, fetchTracked, fetchUserStatus]);
 
   const isPro = userStatus?.tier === 'pro';
   const limit = isPro ? 50 : 3;

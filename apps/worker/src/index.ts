@@ -14,13 +14,12 @@ import { TelegramProvider } from './dispatchers/providers/TelegramProvider';
 import { CustomWebhookProvider } from './dispatchers/providers/CustomWebhookProvider';
 import { NotificationDispatcher } from './dispatchers/NotificationDispatcher';
 import { TelegramBotService } from './services/TelegramBotService';
+import { GlobalWatcherService } from './services/GlobalWatcherService';
 import type { NotificationJobPayload } from '@chaintrigger/shared';
 
-const POLLING_INTERVAL_MS = 10000; 
 const QUEUE_NAME = 'notifications';
 
 async function bootstrap() {
-  let tick = 0;
   console.log('🚀 Birdeye Catalyst Worker başlatılıyor...');
 
   const mongoUri = process.env.MONGO_URI || 'mongodb://mongodb:27017/chaintrigger';
@@ -68,8 +67,8 @@ async function bootstrap() {
     },
   });
 
-  // 3. Engine ve Dispatcher Başlatma
-  const ruleEngine = new RuleEngine(ruleRepo, birdeyeService, notificationQueue);
+  // 3. Engine, Dispatcher ve Global Watcher Başlatma
+  const ruleEngine = new RuleEngine(ruleRepo, birdeyeService, notificationQueue, redisClient);
 
   const dispatcher = new NotificationDispatcher(
     { host: redisHost, port: redisPort },
@@ -79,26 +78,21 @@ async function bootstrap() {
     ]
   );
 
+  const globalWatcher = new GlobalWatcherService(ruleRepo, birdeyeService, ruleEngine);
+
   // 4. Telegram Bot Service (For deep-linking /start)
   const telegramBotService = new TelegramBotService(finalTelegramToken);
 
 
-  console.log('⚙️ Worker Engine aktif. Döngü başlatılıyor...');
+  console.log('⚙️ Worker Engine aktif. Global Watcher başlatılıyor...');
 
-  // 4. Ana Engine Döngüsü (Polling)
-  setInterval(async () => {
-    try {
-      console.log(`[Engine] Tick: ${tick} | Kurallar değerlendiriliyor...`);
-      await ruleEngine.process(tick);
-      tick = (tick + 1) % 60; // 0-59 arası döner
-    } catch (error) {
-      console.error('[Engine] Kritik Hata:', error);
-    }
-  }, POLLING_INTERVAL_MS);
+  // 4. Global Watcher Döngüleri (Polling)
+  await globalWatcher.start();
 
   // Graceful Shutdown
   process.on('SIGINT', async () => {
     console.log('🔴 Kapatılıyor...');
+    await globalWatcher.stopAll();
     await telegramBotService.stop();
     await dispatcher.close();
     await redisClient.disconnect();
