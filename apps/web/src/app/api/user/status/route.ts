@@ -41,7 +41,8 @@ export async function GET(request: Request) {
       telegramChatId: user.telegramChatId,
       tier: user.tier,
       proUntil: user.proUntil,
-      referralCode: user.referralCode
+      referralCode: user.referralCode,
+      referralCount: user.referralCount || 0
     });
   } catch (error) {
     console.error('Error fetching user status:', error);

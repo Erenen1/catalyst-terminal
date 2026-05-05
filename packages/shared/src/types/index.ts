@@ -23,6 +23,7 @@ export interface IUser {
   referralCode?: string; // Kullanıcının kendi referans kodu
   referredBy?: string; // Kullanıcıyı kimin getirdiği (referans kodu)
   isReferralRewardClaimed?: boolean; // Referans ödülü alındı mı?
+  referralCount?: number; // Kaç kişiyi davet etti
   createdAt?: Date;
 }
 

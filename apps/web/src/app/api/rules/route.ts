@@ -99,7 +99,7 @@ export async function POST(request: Request) {
         
         await UserModel.updateOne(
           { _id: referrer._id },
-          { $set: { proUntil: newProUntil, tier: 'pro' } }
+          { $set: { proUntil: newProUntil, tier: 'pro' }, $inc: { referralCount: 1 } }
         );
       }
 

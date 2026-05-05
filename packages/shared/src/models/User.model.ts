@@ -61,6 +61,10 @@ const UserSchema = new Schema<IUserDocument>(
       type: Boolean,
       default: false,
     },
+    referralCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false }, // updatedAt gerekli değil
