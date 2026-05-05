@@ -40,7 +40,7 @@ export default function UpgradePage() {
           <span className="text-[10px] font-mono text-mint uppercase tracking-[0.3em] animate-pulse">Operational_Tiers</span>
           <div className="h-[1px] w-12 bg-mint/30"></div>
         </div>
-        <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter italic">
+        <h1 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter italic">
           Select Your <span className="text-mint">Deployment_Grade</span>
         </h1>
         <p className="text-[#a4a5ab] font-mono text-[11px] uppercase tracking-widest max-w-2xl mx-auto leading-relaxed">
@@ -58,12 +58,12 @@ export default function UpgradePage() {
           <div className="p-8 md:p-10 space-y-8">
             <div className="space-y-2">
               <div className="text-[10px] font-mono text-[#4a4b52] uppercase tracking-widest">TIER_01</div>
-              <h3 className="text-3xl font-black text-white uppercase italic">Standard_Node</h3>
+              <h3 className="text-xl font-black text-white uppercase italic">Standard_Node</h3>
             </div>
 
             <div className="space-y-6">
               <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-black text-white">$0</span>
+                <span className="text-3xl font-black text-white">$0</span>
                 <span className="text-[#4a4b52] font-mono text-[12px] uppercase">/ Lifetime</span>
               </div>
               
@@ -110,12 +110,12 @@ export default function UpgradePage() {
                 <Crown size={14} className="text-mint" />
                 <span className="text-[10px] font-mono text-mint uppercase tracking-widest">TIER_02</span>
               </div>
-              <h3 className="text-3xl font-black text-white uppercase italic">Catalyst_Pro</h3>
+              <h3 className="text-xl font-black text-white uppercase italic">Catalyst_Pro</h3>
             </div>
 
             <div className="space-y-6">
               <div className="flex items-baseline gap-1">
-                <span className="text-5xl font-black text-white">$29</span>
+                <span className="text-3xl font-black text-white">$29</span>
                 <span className="text-[#4a4b52] font-mono text-[12px] uppercase">/ 30_Days</span>
               </div>
               
@@ -183,7 +183,7 @@ export default function UpgradePage() {
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-mint/10 border border-mint/20 text-mint text-[9px] font-bold uppercase tracking-widest">
                 <Gift size={12} /> Referral_Protocol_V1
               </div>
-              <h4 className="text-2xl font-black text-white uppercase italic">Invite_Fellow_Traders</h4>
+              <h4 className="text-lg font-black text-white uppercase italic">Invite_Fellow_Traders</h4>
               <p className="text-[11px] font-mono text-[#a4a5ab] uppercase leading-relaxed max-w-md">
                 Extend your Pro status effortlessly. For every successful node initialized via your link, 
                 both you and your peer receive <span className="text-white">+7 Days of Catalyst Pro</span> access.
