@@ -78,7 +78,14 @@ export async function POST(request: Request) {
 
     // 4. Referral Reward Logic (Trigger on first node deployment + Telegram linked)
     const ruleCount = await RuleModel.countDocuments({ userId: userId.toLowerCase() });
-    if (ruleCount >= 1 && user.referredBy && user.telegramChatId && !user.isReferralRewardClaimed) {
+    
+    // Safety Check: Has this Telegram account ever claimed a reward before?
+    const isTelegramUsed = await UserModel.findOne({ 
+      telegramChatId: user.telegramChatId, 
+      isReferralRewardClaimed: true 
+    });
+
+    if (ruleCount >= 1 && user.referredBy && user.telegramChatId && !user.isReferralRewardClaimed && !isTelegramUsed) {
       const rewardDays = 7;
       const rewardMs = rewardDays * 24 * 60 * 60 * 1000;
       

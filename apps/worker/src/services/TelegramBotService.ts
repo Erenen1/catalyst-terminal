@@ -33,7 +33,13 @@ export class TelegramBotService {
           // Check for Referral Reward
           const ruleCount = await RuleModel.countDocuments({ userId: user.walletAddress.toLowerCase() });
           
-          if (ruleCount >= 1 && user.referredBy && !user.isReferralRewardClaimed) {
+          // Safety Check: Has this Telegram account ever claimed a reward before?
+          const isTelegramUsed = await UserModel.findOne({ 
+            telegramChatId: chatId, 
+            isReferralRewardClaimed: true 
+          });
+
+          if (ruleCount >= 1 && user.referredBy && !user.isReferralRewardClaimed && !isTelegramUsed) {
             const rewardDays = 7;
             const rewardMs = rewardDays * 24 * 60 * 60 * 1000;
             
