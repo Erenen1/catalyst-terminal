@@ -88,8 +88,8 @@ export class BirdeyeService implements IBirdeyeService {
       top10HolderPercent: data.data?.top10HolderPercent ?? 0,
     };
 
-    // Güvenlik verisi daha uzun süre cache'lenir (5 dk)
-    await this.redisClient.setEx(cacheKey, 300, JSON.stringify(result));
+    // Güvenlik verisi daha uzun süre cache'lenir (1 saat)
+    await this.redisClient.setEx(cacheKey, 3600, JSON.stringify(result));
     return result;
   }
 

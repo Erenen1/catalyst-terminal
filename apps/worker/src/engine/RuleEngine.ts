@@ -31,10 +31,19 @@ export class RuleEngine {
    * "Candidate Enrichment" optimizasyonu için kullanılır.
    */
   public isCandidate(rule: IRule, token: BirdeyeToken): boolean {
+    // Kredi Koruması: Likiditesi çok düşük ($100 altı) tokenlar için asla pahalı sorgu yapma
+    const HARD_LIQUIDITY_MIN = 100;
+    if ((token.liquidity || 0) < HARD_LIQUIDITY_MIN) {
+      return false;
+    }
+
     const basicFields = ['liquidity', 'volume_24h', 'price_change_24h'];
     const basicConditions = rule.conditions.filter((c: RuleCondition) => basicFields.includes(c.field));
     
-    if (basicConditions.length === 0) return true;
+    // Eğer kuralda temel bir filtre yoksa, sistem güvenliği için minimum likidite şartı ara
+    if (basicConditions.length === 0) {
+      return (token.liquidity || 0) > 500; // Varsayılan adaylık şartı
+    }
 
     const fieldValues: Record<string, number> = {
       liquidity: token.liquidity,
@@ -166,12 +175,10 @@ export class RuleEngine {
         // Real-time kanala yayınla (SSE/WS için)
         await this.redisClient.publish(channelKey, alertData);
 
-        // Global akış için de aynısını yap
-        if (m.rule.userId === 'GLOBAL') {
-          await this.redisClient.lPush('alerts:user:GLOBAL', alertData);
-          await this.redisClient.lTrim('alerts:user:GLOBAL', 0, 49);
-          await this.redisClient.publish('alerts:channel:GLOBAL', alertData);
-        }
+        // Global Radar akışı (Landing Page) için her eşleşmeyi ekle
+        await this.redisClient.lPush('alerts:user:GLOBAL', alertData);
+        await this.redisClient.lTrim('alerts:user:GLOBAL', 0, 49);
+        await this.redisClient.publish('alerts:channel:GLOBAL', alertData);
       }
 
       console.log(`[RuleEngine] Batch processed: ${alertDocs.length} alerts, ${allJobs.length} notifications, ${allMatches.length} cached.`);
