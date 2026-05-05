@@ -192,18 +192,28 @@ export class GlobalWatcherService {
 
     const enrichmentMap = new Map<string, { security: BirdeyeSecurityData, marketData?: BirdeyeMarketData }>();
     if (candidates.size > 0) {
-      // Parallel pre-fetching with Redis cache
-      await Promise.all([...candidates].map(async (address) => {
-        try {
-          const [security, marketData] = await Promise.all([
-            this.birdeyeService.getTokenSecurity(address, chain),
-            this.birdeyeService.getMarketData(address, chain)
-          ]);
-          enrichmentMap.set(address, { security, marketData });
-        } catch (err) {
-          console.error(`[GlobalWatcher] Enrichment failed for ${address}:`, err);
+      const candidatesArray = [...candidates];
+      const batchSize = 5; // Process 5 tokens at a time to prevent rate limits
+      
+      for (let i = 0; i < candidatesArray.length; i += batchSize) {
+        const batch = candidatesArray.slice(i, i + batchSize);
+        await Promise.all(batch.map(async (address) => {
+          try {
+            const [security, marketData] = await Promise.all([
+              this.birdeyeService.getTokenSecurity(address, chain),
+              this.birdeyeService.getMarketData(address, chain)
+            ]);
+            enrichmentMap.set(address, { security, marketData });
+          } catch (err) {
+            console.error(`[GlobalWatcher] Enrichment failed for ${address}:`, err);
+          }
+        }));
+        
+        // Small delay between batches to respect rate limits
+        if (i + batchSize < candidatesArray.length) {
+          await new Promise(resolve => setTimeout(resolve, 300));
         }
-      }));
+      }
     }
 
     // 3. Distribute tokens to rules locally

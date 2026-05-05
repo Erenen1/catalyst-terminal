@@ -152,8 +152,10 @@ export class RuleEngine {
         await this.notificationQueue.addBulk(allJobs);
       }
 
-      // 3. Redis Caching & Real-time Pub/Sub (Optimizasyon 1 & 5)
-      // Frontend'in veritabanına gitmeden en son alarmları görebilmesi ve anlık güncelleme alması için
+      // 3. Redis Caching & Real-time Pub/Sub (Optimization)
+      // Use Redis Pipeline (multi) to minimize network roundtrips for batch updates
+      const multi = this.redisClient.multi();
+      
       for (const m of allMatches) {
         const cacheKey = `alerts:user:${m.rule.userId}`;
         const channelKey = `alerts:channel:${m.rule.userId}`;
@@ -167,19 +169,20 @@ export class RuleEngine {
           createdAt: new Date()
         });
 
-        // Cache'e ekle (Son 20 alarmı tut)
-        await this.redisClient.lPush(cacheKey, alertData);
-        await this.redisClient.lTrim(cacheKey, 0, 19);
-        await this.redisClient.expire(cacheKey, 86400); // 24 saat kalsın
+        // Add to user cache (keep last 20)
+        multi.lPush(cacheKey, alertData);
+        multi.lTrim(cacheKey, 0, 19);
+        multi.expire(cacheKey, 86400); // 24 hours
+        // Publish to user SSE channel
+        multi.publish(channelKey, alertData);
 
-        // Real-time kanala yayınla (SSE/WS için)
-        await this.redisClient.publish(channelKey, alertData);
-
-        // Global Radar akışı (Landing Page) için her eşleşmeyi ekle
-        await this.redisClient.lPush('alerts:user:GLOBAL', alertData);
-        await this.redisClient.lTrim('alerts:user:GLOBAL', 0, 49);
-        await this.redisClient.publish('alerts:channel:GLOBAL', alertData);
+        // Global Radar Feed for Landing Page (keep last 50)
+        multi.lPush('alerts:user:GLOBAL', alertData);
+        multi.lTrim('alerts:user:GLOBAL', 0, 49);
+        multi.publish('alerts:channel:GLOBAL', alertData);
       }
+      
+      await multi.exec();
 
       console.log(`[RuleEngine] Batch processed: ${alertDocs.length} alerts, ${allJobs.length} notifications, ${allMatches.length} cached.`);
     } catch (error) {
@@ -259,26 +262,4 @@ export class RuleEngine {
     return { isMatch, security, marketData };
   }
 
-  private async enqueueNotification(
-    rule: IRule, 
-    token: BirdeyeToken, 
-    security: BirdeyeSecurityData,
-    marketData?: BirdeyeMarketData
-  ): Promise<void> {
-    const payload: NotificationJobPayload = {
-      ruleId: rule._id!,
-      userId: rule.userId,
-      action: rule.action,
-      token,
-      security,
-      marketData,
-      chain: rule.chain,
-      triggeredAt: new Date(),
-    };
-
-    // Aynı kural ve token için tekrar mesaj gitmesini önleyen yapı (jobId)
-    await this.notificationQueue.add('send-notification', payload, {
-      jobId: `${rule._id}-${token.address}`,
-    });
-  }
 }

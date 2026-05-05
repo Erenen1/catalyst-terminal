@@ -22,26 +22,22 @@ export async function GET(req: NextRequest) {
   const channelKey = `alerts:channel:${userId}`;
   
   // Clean up on close
-  req.signal.addEventListener('abort', async () => {
-    try {
-      await subscriber.unsubscribe(channelKey);
-      await subscriber.quit();
-    } catch (e) {
-      // Redis might already be disconnected
-    } finally {
-      try {
-        writer.close();
-      } catch (e) {
-        // Stream might already be closed
-      }
-    }
+  req.signal.addEventListener('abort', () => {
+    // Next.js automatically closes the stream on client disconnect.
+    // We only need to clean up the Redis subscription.
+    subscriber.unsubscribe(channelKey).catch(() => {});
+    subscriber.quit().catch(() => {});
   });
 
   await subscriber.subscribe(channelKey, (message: string) => {
+    if (req.signal.aborted) return;
+    
     try {
-      writer.write(encoder.encode(`data: ${message}\n\n`));
+      writer.write(encoder.encode(`data: ${message}\n\n`)).catch(() => {
+        // Stream might be closed between the aborted check and the write
+      });
     } catch (e) {
-      // Stream closed, unsubscribe will handle it
+      // Ignore synchronous write errors if stream is closed
     }
   });
 
