@@ -17,13 +17,25 @@ export default function PortfolioPage() {
       const data = await res.json();
       if (Array.isArray(data)) {
         setTrackedTokens(data);
-        // Fetch live prices for all tracked tokens
+        // Fetch live prices and missing logos for all tracked tokens
         await Promise.allSettled(
           data.map(async (token) => {
+            // Price fetch
             const pRes = await fetch(`/api/tokens/price?address=${token.tokenAddress}&chain=${token.chain}`);
             const pData = await pRes.json();
             if (pData?.value != null) {
               setCurrentPrices((prev) => ({ ...prev, [token.tokenAddress]: pData.value }));
+            }
+
+            // Fallback: If logo is missing, fetch it
+            if (!token.logoURI) {
+              const mRes = await fetch(`/api/tokens/metadata?address=${token.tokenAddress}&chain=${token.chain}`);
+              const mData = await mRes.json();
+              if (mData?.logoURI) {
+                setTrackedTokens(prev => prev.map(t => 
+                  t._id === token._id ? { ...t, logoURI: mData.logoURI } : t
+                ));
+              }
             }
           })
         );
