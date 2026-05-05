@@ -37,33 +37,39 @@ export default function RuleForm({ userId, onClose, onSuccess }: RuleFormProps) 
     }
   }, [connectedChain]);
 
-  const [telegramStatus, setTelegramStatus] = useState<{ isConnected: boolean; username?: string; chatId?: string }>({ isConnected: false });
+  const [telegramStatus, setTelegramStatus] = useState<{ isConnected: boolean; username?: string; chatId?: string; tier?: string }>({ isConnected: false });
   const [isLinking, setIsLinking] = useState(false);
+  const [ruleCount, setRuleCount] = useState(0);
+  const userStatus = telegramStatus; // Aliasing for clarity in limit checks
 
   // Fetch and poll for telegram status
   useEffect(() => {
     const checkStatus = async () => {
       try {
-        const res = await fetch(`/api/user/status?address=${userId}`);
-        const data = await res.json();
-        setTelegramStatus(data);
-        if (data.isConnected) {
-          setChatId(data.telegramChatId);
+        // Fetch User Status (Tier, Telegram etc)
+        const statusRes = await fetch(`/api/user/status?address=${userId}`);
+        const statusData = await statusRes.json();
+        setTelegramStatus(statusData);
+        if (statusData.isConnected) {
+          setChatId(statusData.telegramChatId);
+        }
+
+        // Fetch Current Rule Count
+        const rulesRes = await fetch(`/api/rules?userId=${userId}`);
+        const rulesData = await rulesRes.json();
+        if (Array.isArray(rulesData)) {
+          setRuleCount(rulesData.length);
         }
       } catch (error) {
-        console.error('Error fetching status:', error);
+        console.error('Error fetching RuleForm requirements:', error);
       }
     };
 
     checkStatus();
-    const interval = setInterval(() => {
-      if (!telegramStatus.isConnected) {
-        checkStatus();
-      }
-    }, 5000);
+    const interval = setInterval(checkStatus, 5000);
 
     return () => clearInterval(interval);
-  }, [userId, telegramStatus.isConnected]);
+  }, [userId]);
 
   const handleLinkTelegram = async () => {
     setIsLinking(true);
