@@ -227,10 +227,10 @@ export default function MarketPage() {
 
             <div className="p-4 bg-black border border-[#1c1d24] space-y-3">
               <div className="flex items-center gap-3 text-[9px] font-mono text-[#849587] uppercase">
-                <div className="w-1 h-1 bg-amber"></div> 10s Ultra-Fast Polling
+                <div className="w-1 h-1 bg-amber"></div> 1h High-Frequency Polling
               </div>
               <div className="flex items-center gap-3 text-[9px] font-mono text-[#849587] uppercase">
-                <div className="w-1 h-1 bg-amber"></div> Advanced Security Filters
+                <div className="w-1 h-1 bg-amber"></div> Advanced Security Radar
               </div>
               <div className="flex items-center gap-3 text-[9px] font-mono text-[#849587] uppercase">
                 <div className="w-1 h-1 bg-amber"></div> Unlimited Active Nodes
