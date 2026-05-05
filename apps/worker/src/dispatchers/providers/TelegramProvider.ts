@@ -17,6 +17,12 @@ export class TelegramProvider implements INotificationProvider {
 
   async send(payload: NotificationJobPayload): Promise<void> {
     const action = payload.action as TelegramAction;
+    
+    if (!action || !action.chatId) {
+      console.warn(`[TelegramProvider] Missing chat_id for user ${payload.userId}. Skipping notification.`);
+      return;
+    }
+
     const message = this.buildMessage(payload);
     const buttons = this.buildButtons(payload);
 

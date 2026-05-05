@@ -200,25 +200,24 @@ export class GlobalWatcherService {
     const enrichmentMap = new Map<string, { security: BirdeyeSecurityData, marketData?: BirdeyeMarketData }>();
     if (candidates.size > 0) {
       const candidatesArray = [...candidates];
-      const batchSize = 5; // Process 5 tokens at a time to prevent rate limits
+      const batchSize = 1; // Process sequentially to strictly prevent 429 rate limits
       
       for (let i = 0; i < candidatesArray.length; i += batchSize) {
         const batch = candidatesArray.slice(i, i + batchSize);
         await Promise.all(batch.map(async (address) => {
           try {
-            const [security, marketData] = await Promise.all([
-              this.birdeyeService.getTokenSecurity(address, chain),
-              this.birdeyeService.getMarketData(address, chain)
-            ]);
+            // We fetch sequentially instead of Promise.all to avoid triggering 429 inside the batch
+            const security = await this.birdeyeService.getTokenSecurity(address, chain);
+            const marketData = await this.birdeyeService.getMarketData(address, chain);
             enrichmentMap.set(address, { security, marketData });
-          } catch (err) {
-            logger.warn(`Enrichment failed for ${address}`, 'Watcher', err);
+          } catch (err: any) {
+            logger.warn(`Enrichment failed for ${address} - ${err.message}`, 'Watcher');
           }
         }));
         
-        // Small delay between batches to respect rate limits
+        // Strict delay between tokens
         if (i + batchSize < candidatesArray.length) {
-          await new Promise(resolve => setTimeout(resolve, 300));
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
     }

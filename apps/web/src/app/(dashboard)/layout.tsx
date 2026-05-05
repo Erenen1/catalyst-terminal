@@ -5,6 +5,7 @@ import { Settings, Bell, LayoutDashboard, Zap, Database, Terminal, FileText, Hel
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { WalletConnect } from '@/components/features/WalletConnect';
+import { TelegramConnectButton } from '@/components/features/TelegramConnectButton';
 import { useAccount } from 'wagmi';
 
 export default function DashboardLayout({
@@ -159,6 +160,7 @@ export default function DashboardLayout({
             </div>
 
             <div className="flex items-center gap-2">
+               {isConnected && <TelegramConnectButton isConnected={!!userStatus?.telegramChatId} />}
                <WalletConnect />
             </div>
           </div>

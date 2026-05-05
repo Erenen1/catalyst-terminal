@@ -111,7 +111,7 @@ export class BirdeyeService implements IBirdeyeService {
       params: { address },
       headers: { 'x-chain': chain }
     });
-
+    
     const result: BirdeyeMarketData = {
       address,
       price: data.data?.price ?? 0,
