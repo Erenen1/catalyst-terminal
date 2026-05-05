@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Plus, Zap, CheckCircle2, Activity, Trash2, Wallet, Shield } from 'lucide-react';
 import { IRule } from '@chaintrigger/shared';
 import RuleForm from '@/components/features/RuleForm';
-import WaitlistModal from '@/components/features/WaitlistModal';
 import DeleteConfirmModal from '@/components/features/DeleteConfirmModal';
 import SecurityModal from '@/components/features/SecurityModal';
 import { useAccount } from 'wagmi';
@@ -36,7 +35,6 @@ export default function Dashboard() {
   const [trackedTokens, setTrackedTokens] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const [ruleToDelete, setRuleToDelete] = useState<IRule | null>(null);
   const [selectedSecurity, setSelectedSecurity] = useState<any | null>(null);
   const [activeView, setActiveView] = useState<'NODES' | 'ALPHA' | 'MARKET' | 'ACADEMY' | 'PERFORMANCE'>('NODES');
@@ -232,7 +230,7 @@ export default function Dashboard() {
             </div>
           </div>
           <button 
-            onClick={() => rules.length >= limit ? setIsWaitlistOpen(true) : setIsFormOpen(true)}
+            onClick={() => setIsFormOpen(true)}
             className="w-full md:w-auto bg-mint text-black px-4 py-2 md:py-1.5 flex items-center justify-center md:justify-start gap-2 font-bold uppercase tracking-widest text-[10px] hover:brightness-110 transition-all shadow-glow"
           >
             <Plus size={14} />
@@ -428,9 +426,7 @@ export default function Dashboard() {
         />
       )}
 
-      {isWaitlistOpen && (
-        <WaitlistModal onClose={() => setIsWaitlistOpen(false)} />
-      )}
+
 
       {ruleToDelete && (
         <DeleteConfirmModal 

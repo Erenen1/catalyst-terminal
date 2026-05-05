@@ -112,7 +112,6 @@ export default function MarketPage() {
       return;
     }
     setDeploying(blueprint.id);
-    setConfirmingBlueprint(null);
 
     try {
       const res = await fetch('/api/rules', {
@@ -132,6 +131,7 @@ export default function MarketPage() {
       });
 
       if (res.ok) {
+        setConfirmingBlueprint(null);
         router.refresh(); // Clear Next.js router cache
         router.push('/dashboard');
       } else {
@@ -250,6 +250,12 @@ export default function MarketPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {error && !confirmingBlueprint && (
+        <div className="bg-red-500/10 border border-red-500/30 p-4 mb-8">
+          <p className="text-[10px] font-mono text-red-500 uppercase text-center">Global_Error: {error}</p>
         </div>
       )}
 
