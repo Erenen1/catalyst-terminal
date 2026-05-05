@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { Crown, Zap, Shield, Check, Copy, Gift, Users, ArrowUpRight, Lock, Activity, Globe, Cpu } from 'lucide-react';
+import { LoopSubscriptionManager } from '@/components/subscription/LoopSubscriptionManager';
 
 export default function UpgradePage() {
   const { address } = useAccount();
@@ -21,7 +22,6 @@ export default function UpgradePage() {
   }, [address]);
 
   const isPro = userStatus?.tier === 'pro';
-  const helioPayId = process.env.NEXT_PUBLIC_HELIO_PAY_ID || '65f123abc';
 
   const copyReferral = async () => {
     if (!userStatus?.referralCode) return;
@@ -141,35 +141,7 @@ export default function UpgradePage() {
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 bg-black/50 border border-[#1c1d24] flex items-center gap-4">
-                <div className="w-10 h-10 bg-mint/10 border border-mint/20 flex items-center justify-center shrink-0">
-                  <Lock size={16} className="text-mint" />
-                </div>
-                <div className="space-y-0.5">
-                  <div className="text-[10px] font-bold text-white uppercase tracking-tight">Secured by Helio Pay</div>
-                  <div className="text-[8px] font-mono text-[#4a4b52] uppercase">SPL / SOL / USDC / CARD</div>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => {
-                  if (!address) {
-                    setError('WALLET_CONNECTION_MISSING');
-                    return;
-                  }
-                  const helioUrl = `https://app.helio.xyz/pay/${helioPayId}?walletAddress=${address}`;
-                  window.open(helioUrl, '_blank');
-                }}
-                disabled={isPro}
-                className={`w-full py-5 text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 ${
-                  isPro 
-                  ? 'bg-mint/10 text-mint border border-mint cursor-default' 
-                  : 'bg-mint text-black hover:scale-[1.01] active:scale-[0.99] shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:brightness-110'
-                }`}
-              >
-                {isPro ? 'PRO_TIER_ACTIVE' : 'INITIALIZE_UPGRADE'} 
-                {isPro ? <Shield size={16} /> : <ArrowUpRight size={16} />}
-              </button>
+              <LoopSubscriptionManager planPrice={29} planName="Catalyst Pro" />
             </div>
           </div>
         </div>

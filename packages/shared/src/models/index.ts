@@ -14,3 +14,6 @@ export type { IAlertDocument } from './Alert.model';
 
 export { TrackedTokenModel } from './TrackedToken.model';
 export type { ITrackedTokenDocument } from './TrackedToken.model';
+
+export { LoopSubscriptionModel } from './LoopSubscription.model';
+export type { ILoopSubscriptionDocument } from './LoopSubscription.model';

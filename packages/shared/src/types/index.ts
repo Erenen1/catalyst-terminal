@@ -141,3 +141,27 @@ export interface ITrackedToken {
   chain: string;
   createdAt: Date;
 }
+
+// ─── Loop Crypto Subscriptions ────────────────────────────────────────────────
+
+export interface ILoopSubscription {
+  _id?: string;
+  userId: string; // Typically maps to User.walletAddress
+  loopSubscriptionId: string;
+  status: 'active' | 'past_due' | 'canceled' | 'unpaid' | 'paused';
+  plan: string;
+  currentPeriodStart: Date;
+  currentPeriodEnd: Date;
+  gracePeriodEnd?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface LoopWebhookEventPayload {
+  eventId: string;
+  eventType: 'subscription.active' | 'payment.failed' | 'payment.success' | 'subscription.canceled';
+  subscriptionId: string;
+  customerAddress: string;
+  timestamp: string; // ISO String
+  data: any; // Additional payload from Loop Crypto
+}

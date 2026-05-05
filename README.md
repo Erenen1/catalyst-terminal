@@ -141,6 +141,7 @@ If Birdeye Catalyst secures **1st Place** and the accompanying **Birdeye Data Pr
 
 1. **Sub-Minute Polling Limits**: Pro Tier polling will be aggressively reduced from 1 hour to **10 seconds**, and Free Tier to **1 minute**. 
 2. **Multi-Chain Expansion**: We will immediately activate the Global Watcher to monitor **Base, Ethereum, and Arbitrum** simultaneously alongside Solana.
+3. **Full Security Audits**: Currently, the `/defi/token_security` endpoint is mocked because it returns a 401 error on the free tier. With the premium API key, we will instantly enable live data for honeypot, rug pull, and mint/freeze authority checks.
 
 This prize won't just keep our servers on—it will fundamentally transform Catalyst into the **fastest, most comprehensive retail sentinel network in DeFi**, providing our users with an insurmountable speed edge across all major chains.
 

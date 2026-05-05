@@ -15,6 +15,7 @@ import { CustomWebhookProvider } from './dispatchers/providers/CustomWebhookProv
 import { NotificationDispatcher } from './dispatchers/NotificationDispatcher';
 import { TelegramBotService } from './services/TelegramBotService';
 import { GlobalWatcherService } from './services/GlobalWatcherService';
+import { LoopWorker } from './queue/LoopWorker';
 import type { NotificationJobPayload } from '@chaintrigger/shared';
 
 const QUEUE_NAME = 'notifications';
@@ -83,6 +84,9 @@ async function bootstrap() {
   // 4. Telegram Bot Service (For deep-linking /start)
   const telegramBotService = new TelegramBotService(finalTelegramToken);
 
+  // 5. LoopWorker (For processing Loop webhook events)
+  const loopWorker = new LoopWorker(redisHost, redisPort);
+
 
   console.log('⚙️ Worker Engine aktif. Global Watcher başlatılıyor...');
 
@@ -95,6 +99,7 @@ async function bootstrap() {
     await globalWatcher.stopAll();
     await telegramBotService.stop();
     await dispatcher.close();
+    await loopWorker.close();
     await redisClient.disconnect();
     await mongoose.disconnect();
     process.exit(0);

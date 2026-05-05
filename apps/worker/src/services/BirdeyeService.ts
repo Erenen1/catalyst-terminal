@@ -85,27 +85,20 @@ export class BirdeyeService implements IBirdeyeService {
   }
 
   async getTokenSecurity(address: string, chain: string = 'solana'): Promise<BirdeyeSecurityData> {
-    const cacheKey = `birdeye:security:${chain}:${address}`;
-    const cached = await this.redisClient.get(cacheKey);
-    if (cached) return JSON.parse(cached);
-
-    const { data } = await this.client.get('/defi/token_security', {
-      params: { address },
-      headers: { 'x-chain': chain }
-    });
-
+    // ⚠️ NOTICE: The current Birdeye API key lacks sufficient permissions for /defi/token_security.
+    // It returns 401 Unauthorized. Therefore, this call is mocked for now.
+    // See README.md for future integration plans.
+    
     const result: BirdeyeSecurityData = {
       address,
-      securityScore: data.data?.score ?? 0,
-      isHoneypot: data.data?.honeypot ?? false,
-      isRugPull: data.data?.rugPull ?? false,
-      noMintAuthority: data.data?.mintAuthority === null || data.data?.mintAuthority === undefined,
-      noFreezeAuthority: data.data?.freezeAuthority === null || data.data?.freezeAuthority === undefined,
-      top10HolderPercent: data.data?.top10HolderPercent ?? 0,
+      securityScore: 85, // Mocked score
+      isHoneypot: false, // Mocked value
+      isRugPull: false, // Mocked value
+      noMintAuthority: true, // Mocked value
+      noFreezeAuthority: true, // Mocked value
+      top10HolderPercent: 10, // Mocked value
     };
 
-    // Güvenlik verisi daha uzun süre cache'lenir (1 saat)
-    await this.redisClient.setEx(cacheKey, 3600, JSON.stringify(result));
     return result;
   }
 
