@@ -22,6 +22,7 @@ export interface IUser {
   proUntil?: Date; // Pro üyelik bitiş tarihi
   referralCode?: string; // Kullanıcının kendi referans kodu
   referredBy?: string; // Kullanıcıyı kimin getirdiği (referans kodu)
+  isReferralRewardClaimed?: boolean; // Referans ödülü alındı mı?
   createdAt?: Date;
 }
 
