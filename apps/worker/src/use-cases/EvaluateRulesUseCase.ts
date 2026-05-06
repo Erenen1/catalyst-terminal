@@ -90,11 +90,12 @@ export class EvaluateRulesUseCase {
 
     return rule.conditions.every((condition) => {
       const actual = fieldValues[condition.field];
+      const val = condition.value as number;
       switch (condition.operator) {
-        case '>=': return actual >= condition.value;
-        case '<=': return actual <= condition.value;
-        case '>':  return actual >  condition.value;
-        case '<':  return actual <  condition.value;
+        case '>=': return actual >= val;
+        case '<=': return actual <= val;
+        case '>':  return actual >  val;
+        case '<':  return actual <  val;
         case '==': return actual === condition.value;
         default:   return false;
       }

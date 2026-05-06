@@ -54,7 +54,7 @@ export class RuleEngine {
     return basicConditions.every((condition: RuleCondition) => {
       const actual = fieldValues[condition.field];
       const operatorStrategy = this.operatorRegistry.resolve(condition.operator);
-      return operatorStrategy.evaluate(actual, condition.value);
+      return operatorStrategy.evaluate(actual, condition.value as any);
     });
   }
 
@@ -229,7 +229,7 @@ export class RuleEngine {
     const passesBasic = basicConditions.every((condition: RuleCondition) => {
       const actual = fieldValues[condition.field];
       const operatorStrategy = this.operatorRegistry.resolve(condition.operator);
-      return operatorStrategy.evaluate(actual, condition.value);
+      return operatorStrategy.evaluate(actual, condition.value as any);
     });
 
     if (!passesBasic) {
@@ -283,7 +283,7 @@ export class RuleEngine {
     const isMatch = rule.conditions.every((condition: RuleCondition) => {
       const actual = fieldValues[condition.field];
       const operatorStrategy = this.operatorRegistry.resolve(condition.operator);
-      return operatorStrategy.evaluate(actual, condition.value);
+      return operatorStrategy.evaluate(actual, condition.value as any);
     });
 
     return { isMatch, security, marketData };
