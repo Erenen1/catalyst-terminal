@@ -155,6 +155,11 @@ export default function PortfolioPage() {
                               <div className="text-[7px] font-mono text-[#2a2b32] mt-0.5">
                                 Detected: {new Date(token.createdAt).toLocaleDateString('en-US')}
                               </div>
+                              {(token.aiPrediction === 'BEARISH' || token.aiPrediction === 'HIGH_RISK') && (
+                                <div className="mt-1.5 text-[8px] font-mono font-bold text-red-500 bg-red-500/10 border border-red-500/30 px-1.5 py-0.5 uppercase inline-flex items-center gap-1">
+                                  ⚠️ AI SIGNAL: MOMENTUM FADING - CONSIDER EXIT
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -226,6 +231,11 @@ export default function PortfolioPage() {
                           <div>
                             <div className="text-[11px] font-bold text-white uppercase">{token.name}</div>
                             <div className="text-[8px] font-mono text-[#4a4b52] uppercase">{token.symbol} · {token.chain?.toUpperCase()}</div>
+                            {(token.aiPrediction === 'BEARISH' || token.aiPrediction === 'HIGH_RISK') && (
+                              <div className="mt-1 text-[7px] font-mono font-bold text-red-500 bg-red-500/10 border border-red-500/30 px-1 py-0.5 uppercase inline-flex items-center gap-1">
+                                ⚠️ MOMENTUM FADING
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center gap-3">

@@ -13,6 +13,25 @@ export default function MarketPage() {
 
   const blueprints = [
     {
+      id: 'AI_MOMENTUM_ENGINE',
+      name: 'AI_MOMENTUM_ENGINE',
+      desc: 'Uses Deep Learning (LSTM) to predict 4H volume surges and filters out high-risk anomalies. Strictly requires Catalyst Score > 85.',
+      risk: 'LOW',
+      performance: 'PREDICTIVE',
+      tags: ['Solana', 'Deep_Learning', 'AI'],
+      isProOnly: true,
+      isAI: true,
+      config: {
+        triggerType: 'volatility_breakout',
+        conditions: [
+          { field: 'catalyst_score', operator: '>=', value: 85 },
+          { field: 'ai_prediction', operator: '==', value: 'BULLISH' }
+        ],
+        action: { type: 'telegram', params: { chatId: '' } },
+        chain: 'solana'
+      }
+    },
+    {
       id: 'PUMP_ALPHA',
       name: 'PUMP_ALPHA',
       desc: 'Optimized for catching Pump.fun migrations to Raydium. High speed execution.',
@@ -283,16 +302,21 @@ export default function MarketPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {blueprints.map((blueprint) => (
-          <div key={blueprint.name} className="pixel-card group p-6 flex flex-col gap-6 border-dashed hover:border-mint transition-all relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-mint/5 -rotate-45 translate-x-8 -translate-y-8 group-hover:bg-mint/10 transition-all"></div>
+          <div key={blueprint.name} className={`pixel-card group p-6 flex flex-col gap-6 border-dashed transition-all relative overflow-hidden ${(blueprint as any).isAI ? 'border-amber/50 hover:border-amber bg-[#0f0c00]' : 'hover:border-mint'}`}>
+            <div className={`absolute top-0 right-0 w-16 h-16 -rotate-45 translate-x-8 -translate-y-8 transition-all ${(blueprint as any).isAI ? 'bg-amber/10 group-hover:bg-amber/20' : 'bg-mint/5 group-hover:bg-mint/10'}`}></div>
 
             <div className="flex justify-between items-start">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-white uppercase tracking-[0.2em]">{blueprint.name}</span>
+                  <span className={`text-xs font-bold uppercase tracking-[0.2em] ${(blueprint as any).isAI ? 'text-amber' : 'text-white'}`}>{blueprint.name}</span>
                   {blueprint.isProOnly && (
                     <span className="px-1.5 py-0.5 bg-amber/10 border border-amber/30 text-amber text-[7px] font-bold uppercase tracking-widest flex items-center gap-1">
                       <Crown size={8} /> PRO
+                    </span>
+                  )}
+                  {(blueprint as any).isAI && (
+                    <span className="px-1.5 py-0.5 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[7px] font-bold uppercase tracking-widest flex items-center gap-1">
+                      HIGH_CONVICTION
                     </span>
                   )}
                 </div>

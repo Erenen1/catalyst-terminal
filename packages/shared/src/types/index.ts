@@ -36,9 +36,9 @@ export type TriggerType = 'new_listing' | 'trending_entry' | 'whale_radar' | 'li
 export type ConditionOperator = '>=' | '<=' | '>' | '<' | '==';
 
 export interface RuleCondition {
-  field: 'security_score' | 'liquidity' | 'volume_24h' | 'price_change_24h' | 'no_mint_authority' | 'no_freeze_authority' | 'top_10_holder_percent';
+  field: 'security_score' | 'liquidity' | 'volume_24h' | 'price_change_24h' | 'no_mint_authority' | 'no_freeze_authority' | 'top_10_holder_percent' | 'catalyst_score' | 'ai_prediction';
   operator: ConditionOperator;
-  value: number;
+  value: number | string;
 }
 
 // ─── Actions ──────────────────────────────────────────────────────────────────
@@ -92,6 +92,9 @@ export interface BirdeyeSecurityData {
   noMintAuthority?: boolean;
   noFreezeAuthority?: boolean;
   top10HolderPercent?: number;
+  catalystScore?: number;
+  aiPrediction?: string;
+  technicalTrace?: string[];
 }
 
 export interface BirdeyeMarketData {

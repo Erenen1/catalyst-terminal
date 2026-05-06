@@ -296,9 +296,12 @@ export default function Dashboard() {
               <div className="w-1.5 h-1.5 bg-amber"></div>
               <h4 className="text-[10px] font-bold text-white uppercase tracking-widest">02_LOGIC_FILTER</h4>
             </div>
-            <p className="text-[10px] font-mono text-[#4a4b52] leading-relaxed">
+            <p className="text-[10px] font-mono text-[#4a4b52] leading-relaxed mb-2">
               Your constraints operate with "AND" logic. Only approved opportunities are dispatched.
             </p>
+            <div className="text-[8px] font-mono text-amber border border-amber/20 bg-amber/5 p-2 uppercase">
+              Now supporting AI triggers: CATALYST_SCORE &gt;= 80 AND LSTM_PREDICTION == 'BULLISH'
+            </div>
           </div>
           <div className="p-4">
             <div className="flex items-center gap-2 mb-2">

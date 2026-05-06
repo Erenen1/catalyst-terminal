@@ -13,6 +13,7 @@ export default function TerminalPage() {
   const [loading, setLoading] = useState(true);
   const [selectedSecurity, setSelectedSecurity] = useState<any | null>(null);
   const [trackingId, setTrackingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fetchGlobalAlerts = useCallback(async () => {
     try {
@@ -164,10 +165,16 @@ export default function TerminalPage() {
             const isMintRisk  = alert.security?.mintAuthority;
             const isFreezeRisk = alert.security?.freezeAuthority;
 
+            const catalystScore = alert.security?.catalystScore;
+            const aiPrediction = alert.security?.aiPrediction;
+            const technicalTrace = alert.security?.technicalTrace || [];
+            const isExpanded = expandedId === alert._id;
+
             return (
+              <div key={alert._id} className="border-b border-[#1c1d24] last:border-b-0">
               <div
-                key={alert._id}
-                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between group hover:bg-white/[0.02] transition-all border-l-2 border-transparent hover:border-mint gap-4 sm:gap-0"
+                onClick={() => setExpandedId(isExpanded ? null : alert._id)}
+                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between group hover:bg-white/[0.02] transition-all border-l-2 border-transparent hover:border-mint gap-4 sm:gap-0 cursor-pointer"
               >
                 {/* Left: Token Info */}
                 <div className="flex items-center gap-4">
@@ -199,6 +206,19 @@ export default function TerminalPage() {
                       <span className="text-mint">{alert.chain?.toUpperCase()}</span>
                       <span className="text-[#2a2b32]">·</span>
                       <span className="text-[#4a4b52]">{triggerLabel[alert.triggerType] ?? alert.triggerType ?? 'Signal'}</span>
+                    </div>
+                    {/* INLINE BADGES */}
+                    <div className="flex gap-2 mt-2">
+                      {catalystScore !== undefined && (
+                        <span className={`text-[8px] font-bold px-1.5 py-0.5 border ${catalystScore >= 80 ? 'border-mint/50 text-mint bg-mint/5' : catalystScore >= 50 ? 'border-amber/50 text-amber bg-amber/5' : 'border-red-500/50 text-red-500 bg-red-500/5'}`}>
+                          [ SCORE: {catalystScore}/100 ]
+                        </span>
+                      )}
+                      {aiPrediction && (
+                        <span className={`text-[8px] font-bold px-1.5 py-0.5 border ${aiPrediction === 'BULLISH' ? 'border-mint/50 text-mint bg-mint/5' : aiPrediction === 'HIGH_RISK' || aiPrediction === 'BEARISH' ? 'border-red-500/50 text-red-500 bg-red-500/5' : 'border-[#4a4b52] text-[#a4a5ab] bg-white/5'}`}>
+                          [ AI: {aiPrediction} ]
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -242,14 +262,14 @@ export default function TerminalPage() {
                   {/* Buttons */}
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => setSelectedSecurity(alert)}
+                      onClick={(e) => { e.stopPropagation(); setSelectedSecurity(alert); }}
                       className="p-2 border border-[#1c1d24] text-[#4a4b52] hover:text-mint hover:border-mint transition-all"
                       title="Safety Radar"
                     >
                       <Shield size={14} />
                     </button>
                     <button
-                      onClick={() => trackToken(alert)}
+                      onClick={(e) => { e.stopPropagation(); trackToken(alert); }}
                       disabled={trackingId === alert._id}
                       className="px-4 py-2 border border-[#1c1d24] text-[9px] font-mono font-bold text-amber hover:bg-amber hover:text-black transition-all uppercase tracking-widest disabled:opacity-50"
                     >
@@ -257,6 +277,37 @@ export default function TerminalPage() {
                     </button>
                   </div>
                 </div>
+              </div>
+              
+              {/* Expandable Trace Panel */}
+              {isExpanded && (
+                <div className="bg-[#040508] border-t border-[#1c1d24] p-4 ml-14 sm:ml-16 font-mono text-[9px] text-[#849587]">
+                  <div className="mb-2 text-white font-bold tracking-widest uppercase">CATALYST AI_ENGINE // TRACE</div>
+                  <ul className="space-y-1.5">
+                    {technicalTrace && technicalTrace.length > 0 ? (
+                      technicalTrace.map((trace: string, idx: number) => {
+                        let icon = '[·]';
+                        if (trace.toLowerCase().includes('positive') || trace.toLowerCase().includes('bullish')) icon = '[🟢]';
+                        else if (trace.toLowerCase().includes('risk') || trace.toLowerCase().includes('penalty')) icon = '[🔴]';
+                        else if (trace.toLowerCase().includes('multiplier') || trace.toLowerCase().includes('safe')) icon = '[🛡️]';
+                        else if (trace.toLowerCase().includes('ai')) icon = '[🧠]';
+                        
+                        return (
+                          <li key={idx} className="flex gap-2">
+                            <span className="shrink-0">{icon}</span>
+                            <span>{trace}</span>
+                          </li>
+                        );
+                      })
+                    ) : (
+                      <li className="flex gap-2 text-[#4a4b52]">
+                        <span className="shrink-0">[!]</span>
+                        <span>No AI trace data available for this signal.</span>
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
               </div>
             );
           })

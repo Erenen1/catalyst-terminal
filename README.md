@@ -112,6 +112,32 @@ graph LR
 
 ---
 
+## 🧠 The Catalyst AI Engine
+
+At the heart of our macro-analysis engine lies a state-of-the-art Python (FastAPI/PyTorch) microservice designed for institutional-level on-chain analysis. 
+
+### 1. Time-Series Transformer Architecture
+We discarded standard LSTMs in favor of a custom **Time-Series Transformer**. Utilizing Positional Encodings and Multi-Head Attention, the model evaluates 4H batch sequences (up to 60 periods) to understand long-term price and volume relationships, predicting token momentum (BULLISH, BEARISH, NEUTRAL, HIGH_RISK) with deep contextual awareness.
+
+### 2. Multi-Dimensional Feature Engineering
+The AI does not look at raw price alone. Before inference, the engine calculates:
+- **Directional Buy/Sell Pressure:** Evaluating Maker/Taker ratios to distinguish genuine accumulation from panic selling.
+- **Smart Money Index:** Normalizes average trade size against the total liquidity pool to flag extreme Insider/Sniper activity.
+- **Advanced Technical Indicators:** Real-time computation of RSI, MACD, and Volume-Weighted Average Price (VWAP) as direct inputs to the Transformer.
+
+### 3. Asymmetric Risk Engine (The Guillotine)
+The system employs a ruthless, rules-based multiplier on top of the AI base score:
+- **Extreme Risk (0.1x Penalty):** If the Top 10 holders own >80% of the supply and the Liquidity Pool is *not* burned.
+- **Ultra Safe (2.0x Bonus):** If the LP is burned, ownership is decentralized (<20%), and Freeze/Mint authorities are revoked.
+- **Market Baseline (Beta):** The engine cross-references token performance against macro Solana (SOL) price changes, rewarding tokens that show resistance to market-wide dumps.
+
+### 4. Production-Ready Infrastructure
+- **Stateless Redis Caching:** Responses are cached via Redis to ensure sub-millisecond response times during high-traffic loads.
+- **Batch Inference & Masking:** The endpoint accepts `BatchAnalyzeRequest` payloads, applying attention masks (padding) to process hundreds of token trajectories simultaneously via matrix multiplication.
+- **Focal Loss Training:** The model is built using Focal Loss to combat the severe class imbalance in DeFi (where 95% of tokens fail), forcing the AI to focus on discovering the rare, high-alpha candidates.
+
+---
+
 ## ✨ Core Platform Features
 
 1. **Strategy Market (Blueprints)**: Single-click deployment of proven DeFi logic. Users can clone "The Degenerate Pack" or "Whale Follower" directly into their personal node network.
@@ -121,36 +147,28 @@ graph LR
 
 ---
 
-## 🌐 Multi-Chain Scalability & Token Economics
+## 🌐 Macro-Analysis vs. Real-Time Execution
 
-### Why Are We Currently Focused on Solana?
-While the Catalyst engine is natively built to support **all Birdeye-compatible chains** (Ethereum, Base, Arbitrum, BSC), our current default System Rules are strictly monitoring **Solana**. 
-Solana's current network velocity—specifically the immense volume of new listings and Pump.fun migrations—demands the most aggressive, real-time monitoring available. It is the ultimate stress-test for the Catalyst engine.
+### The Compute Unit (CU) Reality & Our Current "Macro" Engine
+Monitoring high-velocity chains like Solana in real-time is an expensive endeavor. With our current Free Tier API limit of **30,000 Compute Units/month**, continuous second-by-second polling is impossible. 
 
-### The API Compute Unit (CU) Hurdle
-Monitoring high-velocity chains in real-time is expensive. With our current Free Tier API limit of **30,000 Compute Units/month**, we had to make a choice. A single cycle of our 3 core triggers (New Listing, Pump.fun, Whale Radar) combined with the necessary Security/Market data enrichment costs roughly 150-250 CUs. 
+Instead of building a broken sniper bot, we engineered Catalyst V1 as a **Macro-Analysis Engine**. We operate on a deliberate 4-hour batch-processing cycle. 
+- **Batch Ingestion:** Every 4 hours, Catalyst ingests a massive payload of ecosystem data.
+- **AI/ML Scoring:** This data is processed asynchronously and evaluated for high-timeframe momentum, liquidity health, and "Smart Money" accumulation. 
+- **The Result:** We provide users with deep, actionable intelligence on market shifts, rather than noisy, second-by-second micro-fluctuations.
 
-To remain sustainable, we have temporarily placed the engine into an optimized **"Safe Mode"**:
-- **Pro Tier Polling**: 1 Hour
-- **Free Tier Polling**: 4 Hours
+### 🚀 The "Hyper-Speed" V2 Roadmap (If We Win)
+Building on the momentum and robust architectural foundation that secured Catalyst a Top 10 finish in Sprint 2, our vision for the hackathon prize is absolute real-time dominance.
 
-Even with our massive 90% CU savings from the *Candidate Enrichment* algorithm, we are bottlenecked by the API tier, preventing Catalyst from operating at the true real-time speeds that day traders require.
+If Birdeye Catalyst secures **1st Place** and the accompanying **Birdeye Data Premium Plus Plan** (60M+ CUs and Enterprise WSS access), we will immediately trigger our V2 deployment:
 
-### 🚀 The "Hyper-Speed" Roadmap (If We Win)
-If Birdeye Catalyst secures **1st Place** and the accompanying **Birdeye Data Premium Plus Plan** (60M+ CUs), we will instantly deploy the following updates:
+1. **Enterprise WebSocket (WSS) Integration:** We will bypass REST API polling entirely for our core modules. The Catalyst Node.js engine is already built on an event-driven architecture, ready to consume Birdeye's live WSS firehose for zero-latency data ingestion.
+2. **The $29/mo Catalyst Pro Tier:** The ultimate monetization strategy. The real-time WSS sniper capabilities, instant RugCheck triggers, and millisecond execution alerts will be strictly gated behind our **Pro Tier**. Users can seamlessly upgrade via our integrated **Sphere** payment gateways.
+3. **Free Tier Lead Magnet:** The Free Tier will remain on the highly valuable 4-hour Macro-Analysis engine, acting as the perfect lead magnet to onboard communities before upselling them to Pro.
+4. **Full Security Audits:** We will instantly enable live data for honeypot, rug pull, and mint/freeze authority checks via the `/defi/token_security` endpoint (currently mocked due to Free Tier 401 errors).
 
-1. **Sub-Minute Polling Limits**: Pro Tier polling will be aggressively reduced from 1 hour to **10 seconds**, and Free Tier to **1 minute**. 
-2. **Multi-Chain Expansion**: We will immediately activate the Global Watcher to monitor **Base, Ethereum, and Arbitrum** simultaneously alongside Solana.
-3. **Full Security Audits**: Currently, the `/defi/token_security` endpoint is mocked because it returns a 401 error on the free tier. With the premium API key, we will instantly enable live data for honeypot, rug pull, and mint/freeze authority checks.
-
-This prize won't just keep our servers on—it will fundamentally transform Catalyst into the **fastest, most comprehensive retail sentinel network in DeFi**, providing our users with an insurmountable speed edge across all major chains.
-
-### 💼 The SaaS Business Model & Break-Even Point
-The 1st Place prize includes **2 months of the Birdeye Premium Plus Plan** ($480/mo value). This 60-day runway is the exact catalyst we need to transition from a hackathon project to a profitable, self-sustaining business. 
-
-By offering the "Catalyst Pro Tier" (which unlocks the 10-second polling speeds) to retail traders at **$29/month**, our break-even point to independently afford the Birdeye Premium Plus API is exceptionally low: **We only need 17 paying customers.** 
-
-Given the 2-month prize window, acquiring just 17-19 Pro users guarantees that Catalyst can permanently self-fund its premium Birdeye data integration. This proves that Birdeye Catalyst is not just a tool—it is a highly viable, scalable startup.
+### 💼 The Break-Even Point
+The 1st Place prize provides a 60-day runway of the Premium Plus API. By unlocking the WSS-powered "Pro Tier" at $29/month, **we only need 17 paying customers** to self-fund the Birdeye Enterprise API permanently. Catalyst is not just a hackathon build; it is a scalable, highly viable SaaS ready for market.
 
 ---
 
