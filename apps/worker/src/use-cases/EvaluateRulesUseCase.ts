@@ -112,6 +112,7 @@ export class EvaluateRulesUseCase {
       token,
       security,
       chain: rule.chain,
+      triggerType: rule.triggerType,
       triggeredAt: new Date(),
     };
 

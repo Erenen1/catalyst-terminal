@@ -1,13 +1,34 @@
 'use client';
-
+ 
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useConnect } from 'wagmi';
 
 export function WalletConnect() {
+  const { connectors } = useConnect();
+
   return (
     <ConnectButton.Custom>
       {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
         const ready = mounted;
         const connected = ready && account && chain;
+
+        const handleConnect = () => {
+          // Check if any injected connector (extension) is available
+          const hasExtension = connectors.some(c => c.type === 'injected' || c.id === 'metaMask' || c.id === 'phantom');
+          
+          // Also check window object for common extensions as a fallback
+          const hasInjected = typeof window !== 'undefined' && (
+            (window as any).ethereum || 
+            (window as any).phantom || 
+            (window as any).solana
+          );
+
+          if (!hasExtension && !hasInjected) {
+            alert('🚫 No wallet extension detected! Please install MetaMask or Phantom to continue.');
+            return;
+          }
+          openConnectModal();
+        };
         
         if (!ready) {
           return (
@@ -28,7 +49,7 @@ export function WalletConnect() {
 
         if (!connected) {
           return (
-            <button onClick={openConnectModal} className="px-5 py-1.5 text-[9px] font-mono uppercase tracking-widest text-[#4a4b52] border border-[#1c1d24] hover:text-white hover:border-mint/50 transition-all">
+            <button onClick={handleConnect} className="px-5 py-1.5 text-[9px] font-mono uppercase tracking-widest text-[#4a4b52] border border-[#1c1d24] hover:text-white hover:border-mint/50 transition-all">
               Connect_Wallet
             </button>
           );

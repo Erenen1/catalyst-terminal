@@ -72,11 +72,32 @@ export class TelegramProvider implements INotificationProvider {
     const { token, security, triggeredAt, userId } = payload;
     const isPublic = userId === 'PUBLIC';
 
+    const triggerEmoji: Record<string, string> = {
+      'new_listing': '🆕',
+      'trending_entry': '📈',
+      'whale_radar': '🐳',
+      'liquidity_drain': '⚠️',
+      'volatility_breakout': '⚡',
+      'pump_fun_migration': '🚀'
+    };
+
+    const triggerLabel: Record<string, string> = {
+      'new_listing': 'New Listing',
+      'trending_entry': 'Trending Entry',
+      'whale_radar': 'Whale Entry',
+      'liquidity_drain': 'Liquidity Drain',
+      'volatility_breakout': 'Volatility Breakout',
+      'pump_fun_migration': 'Pump.fun Migration'
+    };
+
+    const triggerInfo = `${triggerEmoji[payload.triggerType] || '🔔'} *Category:* ${triggerLabel[payload.triggerType] || payload.triggerType}\n`;
+
     let msg = isPublic 
       ? `📢 *BIRDEYE GLOBAL ALPHA FEED* (Delayed 30s)\n` 
       : `🚨 *Birdeye Catalyst Alarm*\n`;
 
-    msg += `\n*Token:* ${token.name} (${token.symbol})\n` +
+    msg += `\n${triggerInfo}` +
+      `*Token:* ${token.name} (${token.symbol})\n` +
       `*Address:* \`${token.address}\`\n`;
 
     if (security.catalystScore !== undefined) {

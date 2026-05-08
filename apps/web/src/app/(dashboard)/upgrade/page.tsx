@@ -11,6 +11,7 @@ export default function UpgradePage() {
   const { address } = useAccount();
   const [userStatus, setUserStatus] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const [referralUrl, setReferralUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -19,24 +20,31 @@ export default function UpgradePage() {
       const url = `/api/user/status?address=${address}${storedRef ? `&ref=${storedRef}` : ''}`;
       fetch(url)
         .then(res => res.json())
-        .then(data => setUserStatus(data));
+        .then(data => {
+          setUserStatus(data);
+          if (data.referralCode) {
+            setReferralUrl(`${window.location.origin}/?ref=${data.referralCode}`);
+          }
+        });
     }
   }, [address]);
 
   const isPro = userStatus?.tier === 'pro';
 
   const copyReferral = async () => {
-    if (!userStatus?.referralCode) return;
-    const url = `${window.location.origin}/?ref=${userStatus.referralCode}`;
+    if (!referralUrl) return;
     
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(referralUrl);
       } else {
-        // Fallback for older browsers or non-secure contexts
         const textArea = document.createElement("textarea");
-        textArea.value = url;
+        textArea.value = referralUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
         document.body.appendChild(textArea);
+        textArea.focus();
         textArea.select();
         document.execCommand("copy");
         document.body.removeChild(textArea);
@@ -46,6 +54,7 @@ export default function UpgradePage() {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+      // Optional: Set some error state here if needed
     }
   };
 
@@ -197,10 +206,10 @@ export default function UpgradePage() {
                   <input 
                     type="text" 
                     readOnly 
-                    value={userStatus?.referralCode ? `${window.location.origin}/?ref=${userStatus.referralCode}` : 'INITIALIZING_CODE...'}
+                    value={referralUrl || 'INITIALIZING_CODE...'}
                     className="w-full bg-black/40 border border-[#1c1d24] border-r-0 px-5 py-4 text-[11px] font-mono text-mint/80 focus:outline-none transition-all group-hover/copy:border-mint/30"
                   />
-                  {!userStatus?.referralCode && (
+                  {!referralUrl && (
                     <div className="absolute inset-0 bg-black/80 flex items-center justify-center animate-pulse">
                       <span className="text-[9px] font-mono text-mint">GEN_LINK...</span>
                     </div>
