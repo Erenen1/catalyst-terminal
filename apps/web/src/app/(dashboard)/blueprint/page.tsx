@@ -17,7 +17,7 @@ export default function MarketPage() {
       name: 'AI_MOMENTUM_ENGINE',
       desc: 'Uses a Time-Series Transformer to predict 4H volume surges and filters out high-risk anomalies. Strictly requires Catalyst Score > 85.',
       risk: 'LOW',
-      performance: 'PREDICTIVE',
+      strategyType: 'AI_PREDICTIVE',
       tags: ['Solana', 'Deep_Learning', 'AI'],
       isProOnly: true,
       isAI: true,
@@ -36,7 +36,7 @@ export default function MarketPage() {
       name: 'PUMP_ALPHA',
       desc: 'Optimized for catching Pump.fun migrations to Raydium. High speed execution.',
       risk: 'HIGH',
-      performance: '12x AVG',
+      strategyType: 'MOMENTUM_PLAY',
       tags: ['Solana', 'Low-Cap'],
       isProOnly: false,
       config: {
@@ -51,7 +51,7 @@ export default function MarketPage() {
       name: 'HOLDER_ALPHA',
       desc: 'Exclusive: Filters tokens with < 20% Top 10 holder concentration. Institutional quality.',
       risk: 'MED',
-      performance: '8.5x AVG',
+      strategyType: 'INSTITUTIONAL',
       tags: ['Solana', 'Low-Concentration'],
       isProOnly: true,
       config: {
@@ -69,7 +69,7 @@ export default function MarketPage() {
       name: 'SECURITY_SHIELD',
       desc: 'Ultra-safe nodes: Only alerts when BOTH Mint and Freeze authority are disabled.',
       risk: 'LOW',
-      performance: '2.1x AVG',
+      strategyType: 'ULTRA_SAFE',
       tags: ['Security', 'Long-Term'],
       isProOnly: true,
       config: {
@@ -88,7 +88,7 @@ export default function MarketPage() {
       name: 'WHALE_WATCHER',
       desc: 'Alerts on high-volume transactions (>50k USD) for trending tokens.',
       risk: 'MED',
-      performance: '4x AVG',
+      strategyType: 'TREND_FOLLOWING',
       tags: ['Solana', 'Trending'],
       isProOnly: false,
       config: {
@@ -335,8 +335,8 @@ export default function MarketPage() {
 
             <div className="flex justify-between items-center pt-6 border-t border-[#1c1d24]">
               <div className="space-y-1">
-                <span className="text-[8px] font-mono text-[#4a4b52] uppercase">Performance</span>
-                <div className="text-[12px] font-mono text-amber font-bold">{blueprint.performance}</div>
+                <span className="text-[8px] font-mono text-[#4a4b52] uppercase">Strategy_Class</span>
+                <div className="text-[10px] font-mono text-amber font-bold tracking-widest">{blueprint.strategyType}</div>
               </div>
               <button
                 onClick={() => setConfirmingBlueprint(blueprint)}
