@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import { RuleModel, UserModel, FREE_TIER_RULE_LIMIT } from '@chaintrigger/shared';

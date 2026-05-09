@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 /**
  * @file apps/web/src/app/api/subscriptions/checkout/route.ts
  * @description Sphere Pay abonelik ödeme linki oluşturur.

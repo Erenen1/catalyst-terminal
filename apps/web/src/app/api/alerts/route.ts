@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { AlertModel } from '@chaintrigger/shared';
 import dbConnect from '@/lib/db';
