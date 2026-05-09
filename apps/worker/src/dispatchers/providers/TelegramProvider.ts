@@ -191,4 +191,3 @@ export class TelegramProvider implements INotificationProvider {
     return msg;
   }
 }
-}
