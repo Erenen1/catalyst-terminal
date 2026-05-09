@@ -133,12 +133,15 @@ export class EvaluateRulesUseCase {
       console.warn(`[EvaluateRules] ⚠️ AI Engine analysis failed for ${token.address}: ${error.message}`);
     }
 
+    const marketData = await this.birdeyeService.getMarketData(token.address);
+
     const payload: NotificationJobPayload = {
       ruleId: rule._id!,
       userId: rule.userId,
       action: rule.action,
       token,
       security,
+      marketData,
       chain: rule.chain,
       triggerType: rule.triggerType,
       triggeredAt: new Date(),
