@@ -156,8 +156,8 @@ export class BirdeyeService implements IBirdeyeService {
       price: data.data?.price ?? 0,
       volume24h: data.data?.volume24h ?? 0,
       liquidity: data.data?.liquidity ?? 0,
-      circulatingSupply: data.data?.circulatingSupply ?? 0,
-      marketCap: data.data?.marketCap ?? 0,
+      circulatingSupply: data.data?.circulating_supply ?? 0,
+      marketCap: data.data?.market_cap ?? 0,
     };
 
     await this.redisClient.setEx(cacheKey, 60, JSON.stringify(result));
