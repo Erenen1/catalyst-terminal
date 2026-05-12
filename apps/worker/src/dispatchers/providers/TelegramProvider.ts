@@ -55,9 +55,16 @@ export class TelegramProvider implements INotificationProvider {
     ];
 
     if (chain === 'solana') {
+      const appUrl = process.env.APP_URL || 'https://catalyst.syconlab.com';
+      const actionUrl = `solana-action:${appUrl}/api/actions/swap?mint=${token.address}`;
+      const blinkUrl = `https://dial.to/?action=${encodeURIComponent(actionUrl)}`;
+
       buttons.push([
-        { text: '⚡ Quick Swap (Jupiter)', url: `https://jup.ag/swap/SOL-${token.address}` },
-        { text: '🛡️ RugCheck Scan', url: `https://rugcheck.xyz/tokens/${token.address}` }
+        { text: '⚡ Quick Buy (Blink)', url: blinkUrl }
+      ]);
+      buttons.push([
+        { text: 'Jupiter Swap', url: `https://jup.ag/swap/SOL-${token.address}` },
+        { text: '🛡️ RugCheck', url: `https://rugcheck.xyz/tokens/${token.address}` }
       ]);
     } else if (chain === 'ethereum') {
       buttons.push([
